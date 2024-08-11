@@ -6,8 +6,7 @@ const EventTypeSchema = new mongoose.Schema({
     required: true,
   },
   details: {
-    type: Object,
-    required: false,
+    type: mongoose.Schema.Types.Mixed,
   },
   createdAt: {
     type: Date,
@@ -17,11 +16,6 @@ const EventTypeSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-});
-
-EventTypeSchema.pre('save', function(next) {
-  this.updatedAt = Date.now();
-  next();
 });
 
 const EventType = mongoose.model("Event-Type", EventTypeSchema);
@@ -59,11 +53,11 @@ async function getEventTypeById(_id) {
 
 async function updateEventType(_id, updates) {
   if (!_id) {
-    throw new Error("Invalid or missing '_id' parameter");
+    throw new Error("Error updating event type: Invalid or missing '_id' parameter");
   }
 
   if (!updates || typeof updates !== "object") {
-    throw new Error("Invalid updates object");
+    throw new Error("Error updating event type: Invalid updates object");
   }
 
   updates.updatedAt = new Date();
@@ -76,7 +70,7 @@ async function updateEventType(_id, updates) {
     );
 
     if (!updatedEventType) {
-      throw new Error(`Event type "${_id}" not found in update`);
+      throw new Error(`Error updating event type: Event type "${_id}" not found in update`);
     }
 
     return updatedEventType;
@@ -86,14 +80,14 @@ async function updateEventType(_id, updates) {
 }
 async function deleteEventType(_id) {
   if (!_id) {
-    throw new Error("Invalid or missing '_id' parameter");
+    throw new Error("Error deleting event rule: Invalid or missing '_id' parameter");
   }
 
   try {
     const deletedEventType = await EventType.findByIdAndDelete(_id);
 
     if (!deletedEventType) {
-      throw new Error(`Event type "${_id}" not found in delete`);
+      throw new Error(`Error deleting event rule: Event type "${_id}" not found in delete`);
     }
 
     return deletedEventType;
