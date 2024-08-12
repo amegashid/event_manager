@@ -6,7 +6,7 @@ import * as eventModel from "../../../models/event/event.js";
 
 const dbUrl = "mongodb://localhost:27017/test_db";
 
-describe("Event, EventType, and EventRule Schema Tests", function () {
+describe("Event, EventType, and EventRule Schema Tests", function() {
   before(async function () {
     await mongoose.connect(dbUrl, {
       useNewUrlParser: true,

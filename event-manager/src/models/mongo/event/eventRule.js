@@ -32,6 +32,18 @@ async function saveEventRule(eventRule){
     }
 }
 
+async function getAllEventsRule() {
+  try {
+    const eventRules = await EventRule.find({});
+    if (!eventRules) {
+      throw new Error("No event rules found");
+    }
+    return eventRules;
+  } catch (error) {
+    throw new Error(`Error fetching all event rules: ${error}`);
+  }
+}
+
 async function getEventRuleById(_id) {
     if (!_id) {
       throw new Error("Invalid or missing '_id' parameter");
@@ -125,4 +137,4 @@ async function deleteEventRule(_id) {
 }
 
 
-export { saveEventRule, getEventRuleById,updateEventRule, deleteEventRule };
+export { saveEventRule, getEventRuleById,updateEventRule, deleteEventRule, getAllEventsRule };

@@ -1,15 +1,28 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+import { fork } from "child_process";
 
-import connectMongo from "./models/event/database.js";
+import connectMongo from "./models/mongo/event/database.js";
 
-// Connect to MongoDB
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = path.dirname(_filename);
+
 try {
-    await connectMongo();
-    console.log("Connected to MongoDB successfully.");
+  const redisProducerChild = fork(
+    path.join(_dirname, "/child/redis-producer/eventRule.js")
+  );
+  redisProducerChild.on("message", (message) => {
+    if (message.status === "success") {
+      console.log("Event rules fetched successfully:", message.data);
+    } else if (message.status === "error") {
+      console.log("Error in child process:", message.message);
+    }
+  });
 } catch (error) {
-    console.log(error.message);
+  console.log(error.message);
 }
 
 const app = express();
