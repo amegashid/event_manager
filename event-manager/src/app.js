@@ -5,8 +5,6 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { fork } from "child_process";
 
-import connectMongo from "./models/mongo/event/database.js";
-
 const _filename = fileURLToPath(import.meta.url);
 const _dirname = path.dirname(_filename);
 
@@ -14,9 +12,12 @@ try {
   const redisProducerChild = fork(
     path.join(_dirname, "/child/redis-producer/eventRule.js")
   );
+
+  redisProducerChild.send('start');
+
   redisProducerChild.on("message", (message) => {
     if (message.status === "success") {
-      console.log("Event rules fetched successfully:", message.data);
+      console.log("Event rules fetched successfully,", message.message);
     } else if (message.status === "error") {
       console.log("Error in child process:", message.message);
     }
