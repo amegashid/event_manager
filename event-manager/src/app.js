@@ -5,21 +5,38 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { fork } from "child_process";
 
+
 const _filename = fileURLToPath(import.meta.url);
 const _dirname = path.dirname(_filename);
 
 try {
-  const redisProducerChild = fork(
-    path.join(_dirname, "/child/redis-producer/eventRule.js")
-  );
 
-  redisProducerChild.send('start');
+  // Merge data with event rule
+  // const redisProducerChild = fork(
+  //   path.join(_dirname, "/child/redis-producer/eventRuleWithData.js")
+  // );
 
-  redisProducerChild.on("message", (message) => {
+  // redisProducerChild.send('start');
+  // redisProducerChild.on("message", (message) => {
+  //   if (message.status === "success") {
+  //     console.log("Event rules fetched from mongo successfully,", message.message);
+  //   } else if (message.status === "error") {
+  //     console.log("Error in child process(redis-producer):", message.message);
+  //   }
+  // });
+
+  /* ****************** */
+  
+  
+  const redisConsumerChild = fork(path.join(_dirname, "/child/redis-consumer/checkEventRules.js"))
+  redisConsumerChild.send('start');
+
+
+  redisConsumerChild.on("message", (message) => {
     if (message.status === "success") {
-      console.log("Event rules fetched successfully,", message.message);
+      console.log("Event rules fetched from redis successfully,", message.message);
     } else if (message.status === "error") {
-      console.log("Error in child process:", message.message);
+      console.log("Error in child process(redis-consumer):", message.message);
     }
   });
 } catch (error) {
