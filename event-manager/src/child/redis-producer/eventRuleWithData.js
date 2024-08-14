@@ -3,7 +3,7 @@ import connectMongo from "../../models/mongo/event/database.js";
 import { getAllEventsRule } from "../../models/mongo/event/eventRule.js";
 import { fetchDataById } from "../../models/mongo/data/data.js";
 
-
+// Connect to databases
 try {
   await redisClient.connect();
   console.log("Redis producer connected to Redis to send event rules");
@@ -13,7 +13,6 @@ try {
 } catch (error) {
   console.log(error.message);
 }
-
 
 process.on("message", (message) => {
   if (message === "start") {
@@ -26,27 +25,7 @@ process.on("message", (message) => {
 async function main() {
   try {
     const eventRules = await getAllEventsRuleAndSendParent();
-    const result = [];
-
-    for (let eventRule of eventRules) {
-      const plainEventRule = eventRule.toObject(); // To avoid storing additional information related to Mongo cache
-      const id = eventRule.source;
-      try {
-        const data = await fetchDataById(id);
-        if (data) {
-          const { value } = data;
-          const newEventRule = {
-            ...plainEventRule,
-            value
-          }
-          result.push(newEventRule);
-        }
-      } catch (error) {
-        console.log(error.message);
-      }
-    }
-    const sendResult = await sendEventRuleToRedis(result);
-
+    const sendResult = await sendEventRuleToRedis(eventRules);
     process.send({
       status: "success",
       message: `Result of sending event rules with data value on redis: ${sendResult}`,
@@ -56,7 +35,6 @@ async function main() {
   }
 }
 
-
 async function getAllEventsRuleAndSendParent() {
   try {
     const eventRules = await getAllEventsRule();
@@ -65,11 +43,38 @@ async function getAllEventsRuleAndSendParent() {
     throw new Error(error);
   }
 }
-
-async function sendEventRuleToRedis(eventRule) {
+async function sendEventRuleToRedis(eventRules) {
   try {
-    return await redisClient.set("eventRuleWithData", JSON.stringify(eventRule));
+    const pipeline = redisClient.multi();
+    const result = [];
+
+    for (let eventRule of eventRules) {
+      const plainEventRule = eventRule.toObject(); // To avoid storing additional information related to Mongo cache
+      const id = eventRule.source;
+
+      try {
+        const data = await fetchDataById(id);
+        if (data) {
+          const { value } = data;
+          const status = 'inactive';
+
+          // Create key and fields to send to Redis
+          const fields = {
+            ...plainEventRule,
+            value: value.toString(),
+            status: status,
+          };   
+
+          result.push(fields);
+        }
+      } catch (error) {
+        console.log(`Error fetching data: ${error.message}`);
+      }
+    }
+    const sendResult = await redisClient.set('dataWithEventRule', JSON.stringify(result));
+    return sendResult;
   } catch (error) {
+    console.error("Error in send event rule to redis:", error.message);
     throw new Error(error);
   }
 }

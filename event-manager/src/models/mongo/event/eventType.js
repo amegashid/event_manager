@@ -50,7 +50,6 @@ async function getEventTypeById(_id) {
     throw new Error(`Error fetching event type "${_id}": ${error.message}`);
   }
 }
-
 async function updateEventType(_id, updates) {
   if (!_id) {
     throw new Error("Error updating event type: Invalid or missing '_id' parameter");

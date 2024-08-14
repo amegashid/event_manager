@@ -1,16 +1,10 @@
 import mongoose from "mongoose";
-import {
-  saveEventType,
-  getEventTypeById,
-  updateEventType,
-  deleteEventType,
-} from "./eventType.js";
 
 const EventSchema = new mongoose.Schema({
   type: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: "EventType",
+    ref: "Event-Type",
   },
   source: {
     type: mongoose.Schema.Types.ObjectId,
@@ -31,16 +25,14 @@ const EventSchema = new mongoose.Schema({
   acknowledged: {
     type: mongoose.Schema.Types.Mixed,
   },
-  active: {
-    type: mongoose.Schema.Types.Mixed,
-  },
-  inactive: {
-    type: mongoose.Schema.Types.Mixed,
-  },
   status: {
     type: String,
     required: true,
   },
+  createsAt: {
+    type: Date,
+    default: Date.now
+  }
 });
 
 const Event = mongoose.model("Event", EventSchema);
