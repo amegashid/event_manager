@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-
+import connectMongo from '../event/database.js';
 const dataSchema = new mongoose.Schema({
   name: { 
     type: String,
@@ -72,3 +72,22 @@ async function fetchAllData() {
 }
 
 export { saveData, fetchAllData, fetchDataById, updateData };
+
+
+const data1 =  {
+  name: 'data1',
+  value: 5,
+}
+
+const data2 =  {
+  name: 'data2',
+  value: 7,
+}
+const data3 =  {
+  name: 'data3',
+  value: 9,
+}
+// await connectMongo()
+// await saveData(data1)
+// await saveData(data2)
+// await saveData(data3)

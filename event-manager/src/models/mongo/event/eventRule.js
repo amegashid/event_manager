@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-
 const EventRuleSchema = new mongoose.Schema({
     name: {
         type: String,

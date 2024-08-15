@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 import { expect } from "chai";
-import * as eventRuleModel from "../../../models/event/eventRule.js";
-import * as eventTypeModel from "../../../models/event/eventType.js";
-import * as eventModel from "../../../models/event/event.js";
+import * as eventRuleModel from "../../../models/mongo/event/eventRule.js";
+import * as eventTypeModel from "../../../models/mongo/event/eventType.js";
+import * as eventModel from "../../../models/mongo/event/event.js";
 
 const dbUrl = "mongodb://localhost:27017/test_db";
 

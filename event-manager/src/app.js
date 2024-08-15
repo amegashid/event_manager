@@ -12,18 +12,18 @@ const _dirname = path.dirname(_filename);
 
 try {
   // Merge data with event rule
-  // const redisProducer = fork(
-  //   path.join(_dirname, "/child/redis-producer/eventRuleWithData.js")
-  // );
+  const redisProducer = fork(
+    path.join(_dirname, "/child/redis-producer/eventRuleWithData.js")
+  );
 
-  // redisProducer.send('start');
-  // redisProducer.on("message", (message) => {
-  //   if (message.status === "success") {
-  //     console.log("Event rules fetched from mongo successfully,", message.message);
-  //   } else if (message.status === "error") {
-  //     console.log("Error in child process(redis-producer):", message.message);
-  //   }
-  // });
+  redisProducer.send('start');
+  redisProducer.on("message", (message) => {
+    if (message.status === "success") {
+      console.log("Event rules fetched from mongo successfully,", message.message);
+    } else if (message.status === "error") {
+      console.log("Error in child process(redis-producer):", message.message);
+    }
+  });
 
   /* ****************** */
   

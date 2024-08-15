@@ -24,7 +24,7 @@ process.on("message", (message) => {
 
 async function main() {
   try {
-    const eventRules = await getAllEventsRuleAndSendParent();
+    const eventRules = await getAllEventsRuleFromMongo();
     const sendResult = await sendEventRuleToRedis(eventRules);
     process.send({
       status: "success",
@@ -35,7 +35,7 @@ async function main() {
   }
 }
 
-async function getAllEventsRuleAndSendParent() {
+async function getAllEventsRuleFromMongo() {
   try {
     const eventRules = await getAllEventsRule();
     return eventRules;
@@ -45,7 +45,6 @@ async function getAllEventsRuleAndSendParent() {
 }
 async function sendEventRuleToRedis(eventRules) {
   try {
-    const pipeline = redisClient.multi();
     const result = [];
 
     for (let eventRule of eventRules) {
